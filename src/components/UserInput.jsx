@@ -1,42 +1,16 @@
 import { useState } from 'react';
 import send from '../assets/send.png'
 
-const API_Key = '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';
-const fetchData = fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-        "Authorization": `Bearer ${API_Key}`,
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-        "model": "openrouter/free",
-        "messages": [
-            {
-                "role": "user",
-                "content": "what is meaning of life"
-            }
-        ]
-    })
-});
-
-// fetchData.then(response => response.json())
-//     .then(data => console.log(data.choices[0].message.content));
-
-
-const UserInput = ({setMessage}) => {
+const UserInput = ({ onSend }) => {
     const [input, setInput] = useState("");
-
+    
     const handleSend = () => {
-        addMessage(input);
+        if(!input) return;
+        onSend(input);
+        setInput("");
     }
-
-    const addMessage = (text) => {
-        if(!text) return;
-        setMessage(prev => [...prev, {role : "user", content: text}])
-    }
-
-    const keyEnter = (e) =>{
-        if(e.key === "Enter"){
+    const keyEnter = (e) => {
+        if (e.key === "Enter") {
             handleSend();
         }
     }

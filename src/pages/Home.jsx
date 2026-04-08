@@ -1,17 +1,53 @@
-import {useState} from 'react'
+import { useState } from 'react'
 import Header from '../components/Header'
 import Content from '../components/Content'
 import UserInput from '../components/UserInput'
 
 const Home = () => {
     const [message, setMessage] = useState([]);
+    const API_Key = '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';
+
+    const handleMessage = async (text) => {
+        if (!text) return;
+        setMessage(prev => [...prev, { role: "user", content: text }]);
+
+        try {
+            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${API_Key}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "openrouter/free",
+                    messages: [
+                        {
+                            role: "user",
+                            content: text
+                        }
+                    ]
+                })
+            });
+
+            const data = await res.json();
+            const reply = data?.choices?.[0]?.message?.content || "No response";
+
+            setMessage(prev => [...prev, { role: "ai", content: reply }])
+
+        }
+        catch (err) {
+            console.log(err);
+            setMessage(prev => [...prev, { role: "ai", content: "Error." }]);
+        }
+    }
+
 
     return (
         <div className='h-screen'>
             <Header />
             <div className='h-5/6 px-6 md:px-30'>
                 <Content message={message} />
-                <UserInput setMessage={setMessage}/>
+                <UserInput onSend={handleMessage} />
             </div>
         </div>
     )
