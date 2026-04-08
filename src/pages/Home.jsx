@@ -5,7 +5,7 @@ import UserInput from '../components/UserInput'
 
 const Home = () => {
     const [message, setMessage] = useState([]);
-    const API_Key = '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';
+    const API_Key = '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';
 
     const handleMessage = async (text) => {
         if (!text) return;
@@ -30,6 +30,7 @@ const Home = () => {
             });
 
             const data = await res.json();
+            console.log(data)
             const reply = data?.choices?.[0]?.message?.content || "No response";
 
             setMessage(prev => [...prev, { role: "ai", content: reply }])
