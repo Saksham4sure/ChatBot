@@ -4,7 +4,7 @@ import Answer from './Answer'
 
 const Content = ({ message }) => {
     return (
-        <div className='h-[90%] px-2 gap-4 flex flex-col overflow-y-auto'>
+        <div className='h-[90%] px-2 gap-4 flex flex-col overflow-y-auto pb-10'>
             <div className='pt-10'>
                 <h1 className='text-xl'>Welcome !</h1>
                 <p className='text-2xl'>Where should we start the conversation?</p>

@@ -5,43 +5,58 @@ import UserInput from '../components/UserInput'
 
 const Home = () => {
     const [message, setMessage] = useState([]);
-    const API_Key = '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';
+
+    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
     const handleMessage = async (text) => {
         if (!text) return;
-        setMessage(prev => [...prev, { role: "user", content: text }]);
+
+        setMessage(prev => [
+            ...prev,
+            { role: "user", content: text }
+        ]);
 
         try {
-            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${API_Key}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    model: "openrouter/free",
-                    messages: [
-                        {
-                            role: "user",
-                            content: text
-                        }
-                    ]
-                })
-            });
+            const res = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                parts: [
+                                    {
+                                        text: text
+                                    }
+                                ]
+                            }
+                        ]
+                    })
+                }
+            );
 
             const data = await res.json();
-            console.log(data)
-            const reply = data?.choices?.[0]?.message?.content || "No response";
+            const reply =
+                data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+                "No response, error occured.";
 
-            setMessage(prev => [...prev, { role: "ai", content: reply }])
-
+            setMessage(prev => [
+                ...prev,
+                { role: "ai", content: reply }
+            ]);
         }
         catch (err) {
             console.log(err);
-            setMessage(prev => [...prev, { role: "ai", content: "Error." }]);
-        }
-    }
 
+            setMessage(prev => [
+                ...prev,
+                { role: "ai", content: "Error." }
+            ]);
+        }
+    };
 
     return (
         <div className='h-screen'>
@@ -51,7 +66,7 @@ const Home = () => {
                 <UserInput onSend={handleMessage} />
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Home
+export default Home;
